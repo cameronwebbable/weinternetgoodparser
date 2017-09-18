@@ -32,37 +32,55 @@ end
 
 
 url = "http://games.espn.com/ffl/scoreboard?leagueId=197012&matchupPeriodId="
+freeAgentsUrl = "http://games.espn.com/ffl/leaders?leagueId=197012&teamId=1&avail=1&scoringPeriodId="
 baseURL = "http://games.espn.com"
 print "Enter Week: "
-a = gets.chomp
+week = gets.chomp
 
-url += a
-puts url
+currentWeekURL = url + week
+freeAgentsUrl += week
+followingWeek = url + (week.to_i + 1).to_s
 puts
-fullStatsURL = []
+quickStatsURLS = []
+nextWeekQuickStatsURLS = []
 
-doc = Nokogiri::HTML(open(url))
+doc = Nokogiri::HTML(open(currentWeekURL))
 doc.css('.boxscoreLinks a').each do |link|
   href = link.attribute('href').value
   if href.include?('quick')
-    fullStatsURL.push(baseURL + href)
+    quickStatsURLS.push(baseURL + href)
   end
 end
+
 startingPlayers = []
 benchPlayers = []
 curbStomps = []
-fullStatsURL.each do | statsURL |
+
+#Stats from each match up
+puts "---This Week's Scores---"
+quickStatsURLS.each do | statsURL |
   quickDoc = Nokogiri::HTML(open(statsURL))
 
   p = quickDoc.xpath('//div[@class="teamInfoOwnerData"]')
 
   scores = quickDoc.xpath('//div[@class="danglerBox totalScore"]')
-  pointDiff = (scores[0].text.to_i - scores[1].text.to_i)
+  ownerA = p[0].text.split(" ")[0]
+  ownerB = p[1].text.split(" ")[0]
+  ownerAScores = scores[0].text.to_i
+  ownerBScores = scores[1].text.to_i
+
+  if (ownerAScores > ownerBScores)
+    puts "#{ownerA} over #{ownerB} (#{ownerAScores} pts - #{ownerBScores} pts)"
+  elsif (ownerBScores > ownerAScores)
+    puts "#{ownerB} over #{ownerA} (#{ownerBScores} pts - #{ownerAScores} pts)"
+  else
+    puts "#{ownerA} tied #{ownerB} (#{ownerAScores} pts - #{ownerBScores} pts)"
+  end
+
+  pointDiff = ownerAScores - ownerBScores
 
   if pointDiff.abs >= 40
     #We want first names
-    ownerA = p[0].text.split(" ")[0]
-    ownerB = p[1].text.split(" ")[0]
     if pointDiff < 0
       curbStomps.push "#{ownerB} (#{scores[1].text.to_i} pts) over #{ownerA} (#{scores[0].text.to_i} pts) - #{pointDiff.abs} point margin of victory"
     else
@@ -72,15 +90,8 @@ fullStatsURL.each do | statsURL |
 
   teamBox = quickDoc.xpath('//table[@class="playerTableTable tableBody"]').each_with_index do |team, index|
     #There's 2 seperate paths to get players for each team, Cuz ESPN.
-    teamPlayersA = team.xpath(".//tr[@class='pncPlayerRow playerTableBgRow0']")
+    teamPlayersA = team.xpath(".//tr[@class='pncPlayerRow playerTableBgRow0']", ".//tr[@class='pncPlayerRow playerTableBgRow1']")
     teamPlayersA.each do |player|
-      owner = p[index].text.split(" ")[0]
-      fantasyPlayer = FantasyPlayer.new(player, owner)
-      startingPlayers.push(fantasyPlayer)
-    end
-
-    teamPlayersB = team.xpath(".//tr[@class='pncPlayerRow playerTableBgRow1']")
-    teamPlayersB.each do |player|
       owner = p[index].text.split(" ")[0]
       fantasyPlayer = FantasyPlayer.new(player, owner)
       startingPlayers.push(fantasyPlayer)
@@ -88,22 +99,28 @@ fullStatsURL.each do | statsURL |
   end
 
   benchTeam = quickDoc.xpath('//table[@class="playerTableTable tableBody hideableGroup"]').each_with_index do |team, index|
-    teamPlayersA = team.xpath(".//tr[@class='pncPlayerRow playerTableBgRow0']")
+    teamPlayersA = team.xpath(".//tr[@class='pncPlayerRow playerTableBgRow0']", ".//tr[@class='pncPlayerRow playerTableBgRow1']")
     teamPlayersA.each do |player|
-      owner = p[index].text.split(" ")[0]
-      fantasyPlayer = FantasyPlayer.new(player, owner)
-      benchPlayers.push(fantasyPlayer)
-    end
-
-    teamPlayersB = team.xpath(".//tr[@class='pncPlayerRow playerTableBgRow1']")
-    teamPlayersB.each do |player|
       owner = p[index].text.split(" ")[0]
       fantasyPlayer = FantasyPlayer.new(player, owner)
       benchPlayers.push(fantasyPlayer)
     end
   end
 end
+puts
 
+#Top Free Agents
+puts "---Top Free Agents---"
+freeAgentsDoc = Nokogiri::HTML(open(freeAgentsUrl))
+freeAgentsDoc.xpath('//tr[@class="pncPlayerRow playerTableBgRow0"]', 'tr[@class="pncPlayerRow playerTableBgRow1"]')[0,5].each do |freeAgentsNode|
+  #Name/Position
+  print freeAgentsNode.xpath(".//td[@class='playertablePlayerName']").text
+  print " "
+  #Points
+  puts freeAgentsNode.xpath(".//td[@class='playertableStat appliedPoints appliedPointsProGameFinal']").text
+
+end
+puts
 puts "---Top Players---"
 puts startingPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }.reverse[0, 5]
 puts
@@ -127,3 +144,23 @@ else
   puts curbStomps
 end
 puts
+
+followingWeekDoc = Nokogiri::HTML(open(followingWeek))
+followingWeekDoc.css('.boxscoreLinks a').each do |link|
+  href = link.attribute('href').value
+  if href.include?('quick')
+    nextWeekQuickStatsURLS.push(baseURL + href)
+  end
+end
+
+puts "---Next Week's Matchups---"
+nextWeekQuickStatsURLS.each do | statsURL |
+  quickDoc = Nokogiri::HTML(open(statsURL))
+
+  p = quickDoc.xpath('//div[@class="teamInfoOwnerData"]')
+
+  scores = quickDoc.xpath('//div[@class="danglerBox totalScore"]')
+  ownerA = p[0].text.split(" ")[0]
+  ownerB = p[1].text.split(" ")[0]
+  puts "#{ownerA} vs #{ownerB}"
+end
