@@ -112,7 +112,7 @@ puts
 #Top Free Agents
 puts "---Top Free Agents---"
 freeAgentsDoc = Nokogiri::HTML(open(freeAgentsUrl))
-freeAgentsDoc.xpath('//tr[@class="pncPlayerRow playerTableBgRow0"]', 'tr[@class="pncPlayerRow playerTableBgRow1"]')[0,5].each do |freeAgentsNode|
+freeAgentsDoc.xpath('//tr[contains(@class,"pncPlayerRow")]')[0,5].each do |freeAgentsNode|
   #Name/Position
   print freeAgentsNode.xpath(".//td[@class='playertablePlayerName']").text
   print " "
