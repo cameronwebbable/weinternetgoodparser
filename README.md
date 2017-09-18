@@ -4,14 +4,13 @@ Requirements
 	- if you have an older version of Ruby, you'll need to go install "RubyGems" (just google it)
 - Nokogiri library (`gem install nokogiri`)
 	
-<br />	
 How to Run
 ===
-Open terminal, cd into this directory, then run `ruby espnParser.rb`. 
+- Open terminal
+- cd into the directory for this repository
+- run `ruby espnParser.rb`
+- On being prompted, enter week you'd like to get stats for
 
-On being prompted, enter week you'd like to get stats for. 
-
-<br />	
 Example Stats
 ===
 
