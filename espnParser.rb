@@ -33,6 +33,7 @@ end
 
 url = "http://games.espn.com/ffl/scoreboard?leagueId=197012&matchupPeriodId="
 freeAgentsUrl = "http://games.espn.com/ffl/leaders?leagueId=197012&teamId=1&avail=1&scoringPeriodId="
+standingsUrl = "http://games.espn.com/ffl/standings?leagueId=197012&seasonId=2017"
 baseURL = "http://games.espn.com"
 print "Enter Week: "
 week = gets.chomp
@@ -108,8 +109,9 @@ quickStatsURLS.each do | statsURL |
   end
 end
 puts
-
-#Top Free Agents
+puts "---Top Starters---"
+puts startingPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }.reverse[0, 5]
+puts
 puts "---Top Free Agents---"
 freeAgentsDoc = Nokogiri::HTML(open(freeAgentsUrl))
 freeAgentsDoc.xpath('//tr[contains(@class,"pncPlayerRow")]')[0,5].each do |freeAgentsNode|
@@ -120,9 +122,6 @@ freeAgentsDoc.xpath('//tr[contains(@class,"pncPlayerRow")]')[0,5].each do |freeA
   puts freeAgentsNode.xpath(".//td[@class='playertableStat appliedPoints appliedPointsProGameFinal']").text
 
 end
-puts
-puts "---Top Players---"
-puts startingPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }.reverse[0, 5]
 puts
 puts "---Top Bench Players---"
 puts benchPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }.reverse[0, 5]
@@ -142,6 +141,22 @@ if curbStomps.length == 0
   puts "None"
 else
   puts curbStomps
+end
+puts
+
+### Power Rankings ###
+puts "---Power Rankings---"
+rankingsDoc = Nokogiri::HTML(open(standingsUrl))
+rankingsDoc.xpath('//tr[contains(@class,"sortableRow")]').each_with_index do |rankingsNode, index|
+  #Name/Position
+  print "#{index + 1}) "
+  print rankingsNode.xpath(".//td")[0].text
+  print " "
+  print rankingsNode.xpath(".//td[@class='sortableDIV']").text.split("-")[0,2].join("-")
+  puts " "
+  #Points
+  # puts freeAgentsNode.xpath(".//td[@class='playertableStat appliedPoints appliedPointsProGameFinal']").text
+
 end
 puts
 
