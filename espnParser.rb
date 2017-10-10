@@ -133,7 +133,7 @@ end
 if crappyPlayers.length == 0
   puts "None"
 else
-  puts crappyPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }.reverse
+  puts crappyPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }
 end
 puts
 puts "---Curbstomps---"
