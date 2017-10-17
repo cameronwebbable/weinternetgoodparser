@@ -2,44 +2,17 @@ require 'open-uri'
 require 'rubygems'
 require 'nokogiri'
 
-class FantasyPlayer
-  attr_accessor :name
-  attr_accessor :points
-  attr_accessor :owner
-
-  def initialize(playerNode, owner)
-    @name = name
-    @points = points
-    @owner = owner
-    nameNode = playerNode.xpath(".//td[@class='playertablePlayerName']")
-    @name = ""
-    if !nameNode.nil? && nameNode.length > 0
-      @name = nameNode[0].text.strip.split(/(?:[[:space:]][[:space:]]+|\t)/)[0]
-    end
-    @points = playerNode.xpath(".//td[@class='playertableStat appliedPoints appliedPointsProGameFinal']").text || "0"
-    @owner = owner
-
-  end
-
-  def <=>(other)
-    @points.to_i <=> other.points.to_i
-  end
-
-  def to_s
-    @name + ", " + @points + " points (" + @owner + ")"
-  end
-end
-
+require './fantasyplayer'
 
 url = "http://games.espn.com/ffl/scoreboard?leagueId=197012&matchupPeriodId="
-freeAgentsUrl = "http://games.espn.com/ffl/leaders?leagueId=197012&teamId=1&avail=1&scoringPeriodId="
+freeAgentsURL = "http://games.espn.com/ffl/leaders?leagueId=197012&teamId=1&avail=1&scoringPeriodId="
 standingsUrl = "http://games.espn.com/ffl/standings?leagueId=197012&seasonId=2017"
 baseURL = "http://games.espn.com"
 print "Enter Week: "
 week = gets.chomp
 
 currentWeekURL = url + week
-freeAgentsUrl += week
+freeAgentsURL += week
 followingWeek = url + (week.to_i + 1).to_s
 puts
 quickStatsURLS = []
@@ -113,7 +86,7 @@ puts "---Top Starters---"
 puts startingPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }.reverse[0, 5]
 puts
 puts "---Top Free Agents---"
-freeAgentsDoc = Nokogiri::HTML(open(freeAgentsUrl))
+freeAgentsDoc = Nokogiri::HTML(open(freeAgentsURL))
 freeAgentsDoc.xpath('//tr[contains(@class,"pncPlayerRow")]')[0,5].each do |freeAgentsNode|
   #Name/Position
   print freeAgentsNode.xpath(".//td[@class='playertablePlayerName']").text
@@ -122,6 +95,7 @@ freeAgentsDoc.xpath('//tr[contains(@class,"pncPlayerRow")]')[0,5].each do |freeA
   puts freeAgentsNode.xpath(".//td[@class='playertableStat appliedPoints appliedPointsProGameFinal']").text
 
 end
+
 puts
 puts "---Top Bench Players---"
 puts benchPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }.reverse[0, 5]
