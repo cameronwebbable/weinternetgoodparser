@@ -31,7 +31,7 @@ benchPlayers = []
 curbStomps = []
 
 #Stats from each match up
-puts "---This Week's Scores---"
+puts "This Week's Scores"
 quickStatsURLS.each do | statsURL |
   quickDoc = Nokogiri::HTML(open(statsURL))
 
@@ -82,10 +82,10 @@ quickStatsURLS.each do | statsURL |
   end
 end
 puts
-puts "---Top Starters---"
+puts "Top Starters"
 puts startingPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }.reverse[0, 5]
 puts
-puts "---Top Free Agents---"
+puts "Top Free Agents"
 freeAgentsDoc = Nokogiri::HTML(open(freeAgentsURL))
 freeAgentsDoc.xpath('//tr[contains(@class,"pncPlayerRow")]')[0,5].each do |freeAgentsNode|
   #Name/Position
@@ -97,10 +97,10 @@ freeAgentsDoc.xpath('//tr[contains(@class,"pncPlayerRow")]')[0,5].each do |freeA
 end
 
 puts
-puts "---Top Bench Players---"
+puts "Top Bench Players"
 puts benchPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }.reverse[0, 5]
 puts
-puts "---Top Flaming Pieces of Trash---"
+puts "Top Flaming Pieces of Trash"
 crappyPlayers = startingPlayers.select do |player|
   player.points.to_i < 0
 end
@@ -110,7 +110,7 @@ else
   puts crappyPlayers.sort {|a,b| a.points.to_i <=> b.points.to_i }
 end
 puts
-puts "---Curbstomps---"
+puts "Curbstomps"
 if curbStomps.length == 0
   puts "None"
 else
@@ -119,7 +119,7 @@ end
 puts
 
 ### Power Rankings ###
-puts "---Power Rankings---"
+puts "Power Rankings"
 rankingsDoc = Nokogiri::HTML(open(standingsUrl))
 rankingsDoc.xpath('//tr[contains(@class,"sortableRow")]').each_with_index do |rankingsNode, index|
   #Name/Position
@@ -142,7 +142,7 @@ followingWeekDoc.css('.boxscoreLinks a').each do |link|
   end
 end
 
-puts "---Next Week's Matchups---"
+puts "Next Week's Matchups"
 nextWeekQuickStatsURLS.each do | statsURL |
   quickDoc = Nokogiri::HTML(open(statsURL))
 
