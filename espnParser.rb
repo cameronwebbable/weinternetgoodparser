@@ -124,7 +124,7 @@ rankingsDoc = Nokogiri::HTML(open(standingsUrl))
 rankingsDoc.xpath('//tr[contains(@class,"sortableRow")]').each_with_index do |rankingsNode, index|
   #Name/Position
   print "#{index + 1}) "
-  print rankingsNode.xpath(".//td")[0].text
+  print /\(\w*/.match(rankingsNode.xpath(".//td")[0].text).to_s.split("(")[1]
   print " "
   print rankingsNode.xpath(".//td[@class='sortableDIV']").text.split("-")[0,2].join("-")
   puts " "
