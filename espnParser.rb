@@ -125,9 +125,9 @@ rankingsDoc.xpath('//tr[contains(@class,"sortableRow")]').each_with_index do |ra
   #Name/Position
   print "#{index + 1}) "
   print /\(\w*/.match(rankingsNode.xpath(".//td")[0].text).to_s.split("(")[1]
-  print " "
+  print " ("
   print rankingsNode.xpath(".//td[@class='sortableDIV']").text.split("-")[0,2].join("-")
-  puts " "
+  puts ") "
   #Points
   # puts freeAgentsNode.xpath(".//td[@class='playertableStat appliedPoints appliedPointsProGameFinal']").text
 
