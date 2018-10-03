@@ -4,12 +4,18 @@ require 'nokogiri'
 
 require './fantasyplayer'
 
-url = "http://games.espn.com/ffl/scoreboard?leagueId=197012&matchupPeriodId="
-freeAgentsURL = "http://games.espn.com/ffl/leaders?leagueId=197012&teamId=1&avail=1&scoringPeriodId="
-standingsUrl = "http://games.espn.com/ffl/standings?leagueId=197012&seasonId=2017"
 baseURL = "http://games.espn.com"
-print "Enter Week: "
+leagueId = "197012"
+
+url = "#{baseURL}/ffl/scoreboard?leagueId=#{leagueId}&matchupPeriodId="
+freeAgentsURL = "#{baseURL}/ffl/leaders?leagueId=#{leagueId}&teamId=1&avail=1&scoringPeriodId="
+
+print "Enter Week (e.g. 1): "
 week = gets.chomp
+print "Enter Year (e.g. 2018): "
+year = gets.chomp
+
+standingsUrl = "#{baseURL}/ffl/standings?leagueId=#{leagueId}&seasonId=#{year}"
 
 currentWeekURL = url + week
 freeAgentsURL += week
