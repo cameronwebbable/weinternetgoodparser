@@ -22,3 +22,5 @@ browser.goto e.scoreboard_url
 puts 'Waiting for Scoreboard to Load...'
 browser.div(class: "player-score").wait_until(&:exists?)
 puts doc = Nokogiri::HTML(browser.html)
+
+## Get owners and team teams... there's a nav item on scoreboard that has this
