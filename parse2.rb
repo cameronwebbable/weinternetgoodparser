@@ -1,4 +1,6 @@
 require 'rubygems'
+ruby "2.5.6"
+
 require 'bundler/setup'
 
 require 'open-uri'
