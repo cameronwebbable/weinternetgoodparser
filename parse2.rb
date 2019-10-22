@@ -1,5 +1,4 @@
 require 'rubygems'
-ruby "2.5.6"
 
 require 'bundler/setup'
 
@@ -9,20 +8,24 @@ require 'watir'
 
 require './espn_config'
 
-#maybe we'll just eventually detect it
-current_week = 7
+def get_teams espn_config
+  browser = Watir::Browser.new :chrome, headless: true
+  browser.goto espn_config.scoreboard_url
+  puts 'Waiting for Scoreboard to Load...'
+  browser.div(class: "matchupWeekDropdown").wait_until(&:exists?)
 
-e = ESPNConfig.new("197012", "7")
+  teams = {}
+  doc = Nokogiri::HTML(browser.html)
+  teams_div = doc.css('.teams').last
+  teams_div.css('.NavSecondary__TextContainer').each do |team|
+    owner_name = team.css('.owner-name').first.text
+    team_name = team.css(".NavMain__Text").first.text.split(" (").first
+    teams[team_name] = owner_name
+  end
 
-matchup_period = 7
-puts e.scoreboard_url
-puts e.standings_url
+  teams
+end
 
-
-browser = Watir::Browser.new :chrome, headless: true
-browser.goto e.scoreboard_url
-puts 'Waiting for Scoreboard to Load...'
-browser.div(class: "player-score").wait_until(&:exists?)
-puts doc = Nokogiri::HTML(browser.html)
-
-## Get owners and team teams... there's a nav item on scoreboard that has this
+current_week = "7"
+espn_config = ESPNConfig.new("197012", current_week)
+get_teams espn_config

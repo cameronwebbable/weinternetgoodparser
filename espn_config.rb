@@ -3,7 +3,6 @@ class ESPNConfig
   LEAGUE_CONSTANT = "league"
   LEAGUE_ID_CONSTANT = "leagueId"
   MATCHUP_PERIOD_ID_CONSTANT = "matchupPeriodId"
-
   
   def initialize league_id, matchup_period, season_id = 2019, sport = "football"
     @league_id = league_id    
