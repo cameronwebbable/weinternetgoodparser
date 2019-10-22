@@ -2,13 +2,14 @@ Requirements
 ===
 - Ruby 1.9 or Newer
 	- if you have an older version of Ruby, you'll need to go install "RubyGems" (just google it)
-- Nokogiri library (`gem install nokogiri`)
+- Bundler (`gem install bundler`)
 	
 How to Run
 ===
 - Open terminal
 - cd into the directory for this repository
-- run `ruby espnParser.rb`
+- If you haven't, run `bundle install`
+- To run script: `bundle exec ruby parse2.rb`
 - On being prompted, enter week you'd like to get stats for
 
 Example Stats
