@@ -23,7 +23,8 @@ class ESPNConfig
   end
 
   def boxscore_url
-    ([BASE_URL, @sport, "boxscore"]. join '/')
+    url_builder = ([BASE_URL, @sport, "boxscore"]. join '/')
+    url_builder += (parameterize (league_week_params + []))
 
   end
   
