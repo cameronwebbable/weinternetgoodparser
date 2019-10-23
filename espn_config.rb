@@ -21,6 +21,11 @@ class ESPNConfig
     #https://fantasy.espn.com/football/players/add?leagueId=197012
     ([BASE_URL, @sport, LEAGUE_CONSTANT, page_type].join '/')
   end
+
+  def boxscore_url
+    ([BASE_URL, @sport, "boxscore"]. join '/')
+
+  end
   
   def standings_url
     #https://fantasy.espn.com/football/league/standings?leagueId=197012&matchupPeriodId=7

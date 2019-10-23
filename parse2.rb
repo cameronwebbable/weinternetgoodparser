@@ -29,11 +29,12 @@ def get_scores espn_config
   doc = Nokogiri::HTML(browser.html)
   teams = get_teams doc
 
-  doc.css('.matchup-teams-score').map { |matchup| 
+  doc.css('.matchup-score').map { |matchup| 
     matchup_teams = matchup.css('.ScoreCell__TeamName').map { |m| m.text}
-    matchup_scores = {}
+    detail_url = matchup.css('.Scoreboard__Callouts').css('a').attribute('href').value
+    matchup_scores = { url: detail_url }
     matchup.css('.ScoreCell__Score').each_with_index { |val, index|
-      matchup_scores[matchup_teams[index]] = val.text
+      matchup_scores[matchup_teams[index]] = val.text.to_i
     }
 
     matchup_scores
@@ -41,8 +42,20 @@ def get_scores espn_config
 
 end
 
+def get_stomps matchup_scores
+  matchup_scores.map { |matchup| 
+    if matchup.values.reduce(:-) >= 40
+      matchup
+    end
+  }.compact
+end
+
+def get_high_low_bench_points scores
+  
+end
+
 current_week = "7"
 espn_config = ESPNConfig.new("197012", current_week)
 
-puts get_scores espn_config
-
+scores = get_scores espn_config
+puts get_stomps scores.map { |m| m.select{|x| x != :url} }
