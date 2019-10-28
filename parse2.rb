@@ -7,6 +7,8 @@ require 'nokogiri'
 require 'watir'
 
 require './espn_config'
+require './fantasyplayer'
+
 
 def get_teams doc
   teams = {}
@@ -20,9 +22,9 @@ def get_teams doc
   teams
 end
 
-def get_scores espn_config
+def get_scores config
   browser = Watir::Browser.new :chrome, headless: true
-  browser.goto espn_config.scoreboard_url
+  browser.goto config.scoreboard_url
   puts 'Waiting for Scoreboard to Load...'
   browser.div(class: "matchupWeekDropdown").wait_until(&:exists?)
 
@@ -50,12 +52,61 @@ def get_stomps matchup_scores
   }.compact
 end
 
-def get_high_low_bench_points scores
-  
+def get_all_player_box config, scores
+  player_scores = []
+  puts scores.length
+  scores.each {|score|
+    browser = Watir::Browser.new :chrome, headless: true
+    puts config.url_from_relative score[:url]
+    browser.goto config.url_from_relative score[:url]
+    puts 'Waiting for page to load...'
+    browser.tr(class: 'Table2__odd').wait_until(&:exists?)
+
+    doc = Nokogiri::HTML(browser.html)
+    teams = doc.css('.teamName').map {|team| team.text}
+    puts teams
+    doc.css('.mr4').each_with_index { |lineup_div, index|
+      owner = teams[index]
+      s = lineup_div.css('.Table2__odd').map {|player_row|
+        row_info = player_row.css('.Table2__td')
+        player_pos = row_info[0].xpath(".//div").attribute('title')
+        player_name = row_info[1].xpath(".//div").attribute('title')
+        if player_name.nil? || player_name.text == "Player"
+          next
+        end
+        if player_pos.text == "Injured Reserve"
+          next
+        end
+        player_proj = row_info[4].xpath(".//div/span").text
+        if player_proj == "--"
+          player_proj = 0
+        end
+        player_actual = row_info[5].xpath(".//div/span").text
+        if player_actual == "--"
+          player_actual = 0
+        end
+        FantasyPlayer.new(player_name, owner, player_pos, player_proj, player_actual)
+      }.compact
+
+      player_scores = player_scores + s
+    }
+  }
+
+  player_scores
+
 end
 
 current_week = "7"
 espn_config = ESPNConfig.new("197012", current_week)
 
 scores = get_scores espn_config
-puts get_stomps scores.map { |m| m.select{|x| x != :url} }
+stomps = get_stomps scores.map { |m| m.select{|x| x != :url} }
+matchup_urls = scores.map {|m| m.select {|x| x == :url} }
+
+players = get_all_player_box espn_config, scores
+
+most = players.sort {|a,b| a.actual.to_i <=> b.actual.to_i }.reverse[0, 5]
+bad = players.select {|player| player.actual.to_i < 0}
+
+puts most
+puts bad

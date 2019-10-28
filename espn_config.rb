@@ -40,6 +40,10 @@ class ESPNConfig
     #https://fantasy.espn.com/football/league/#{page_type}
     ([BASE_URL, @sport, LEAGUE_CONSTANT, page_type].join '/')
   end
+
+  def url_from_relative relative
+    BASE_URL + relative
+  end
   
   def league_week_params
     [[LEAGUE_ID_CONSTANT, @league_id], [MATCHUP_PERIOD_ID_CONSTANT, @matchup_period]]
