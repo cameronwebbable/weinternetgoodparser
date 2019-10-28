@@ -54,7 +54,6 @@ end
 
 def get_all_player_box config, scores
   player_scores = []
-  puts scores.length
   scores.each {|score|
     browser = Watir::Browser.new :chrome, headless: true
     puts config.url_from_relative score[:url]
@@ -67,7 +66,7 @@ def get_all_player_box config, scores
     puts teams
     doc.css('.mr4').each_with_index { |lineup_div, index|
       owner = teams[index]
-      s = lineup_div.css('.Table2__odd').map {|player_row|
+      player_scores += lineup_div.css('.Table2__odd').map {|player_row|
         row_info = player_row.css('.Table2__td')
         player_pos = row_info[0].xpath(".//div").attribute('title')
         player_name = row_info[1].xpath(".//div").attribute('title')
@@ -87,8 +86,6 @@ def get_all_player_box config, scores
         end
         FantasyPlayer.new(player_name, owner, player_pos, player_proj, player_actual)
       }.compact
-
-      player_scores = player_scores + s
     }
   }
 
