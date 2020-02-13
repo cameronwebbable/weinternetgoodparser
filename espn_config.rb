@@ -19,7 +19,8 @@ class ESPNConfig
 
   def free_agents_url
     #https://fantasy.espn.com/football/players/add?leagueId=197012
-    ([BASE_URL, @sport, LEAGUE_CONSTANT, page_type].join '/')
+    url_builder = ([BASE_URL, @sport, 'players', 'add'].join '/')
+    url_builder += (parameterize (league_week_params + []))
   end
 
   def boxscore_url

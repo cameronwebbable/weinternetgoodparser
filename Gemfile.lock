@@ -3,11 +3,11 @@ GEM
   specs:
     childprocess (3.0.0)
     mini_portile2 (2.4.0)
-    nokogiri (1.10.4)
+    nokogiri (1.10.7)
       mini_portile2 (~> 2.4.0)
     regexp_parser (1.6.0)
     rubyzip (2.0.0)
-    selenium-webdriver (3.142.6)
+    selenium-webdriver (3.142.7)
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
     watir (6.16.5)
