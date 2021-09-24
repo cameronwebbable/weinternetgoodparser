@@ -1,7 +1,6 @@
 Requirements
 ===
-- Ruby 1.9 or Newer
-	- if you have an older version of Ruby, you'll need to go install "RubyGems" (just google it)
+- Ruby 2.7.2
 - Bundler (`gem install bundler`)
 	
 How to Run
